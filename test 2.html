@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>婚贝请柬</title>
+    <link rel="stylesheet" href="/static/hunbei/css/common.css">
+    <link rel="stylesheet" href="/static/hunbei/css/view.css?v=5">
+    <script src="https://cdn.hunbei.com/qrcode.min.js"></script>
+    <script src="https://cdn.hunbei.com/jquery.min.js"></script>
+</head>
+
+<body>
+    <div class="view-bg-cont">
+        <div class="view-center">
+            <div>
+                <div class="main-left">
+                    <div class="qj">
+                        <div class="qj-title">
+                            清新绿意❤️婚礼长页                        </div>
+                        <iframe src="https://h5.hunbei.com/app/A150661148131?state=1A&uniqid=1718992250&wxnoauth=1"
+                            width="375" height="603" id="iframe-view"></iframe>
+                    </div>
+                </div>
+                <div class="make-btn1" onclick="location.href='/all/template'">
+                    <a href="javascript:;">我要制作</a>
+                </div>
+            </div>
+
+            <div class="view-page">
+                <p class="arrow"></p>
+                <div class="text-shu text-down disable_page" onclick="fliPage('down')">上一页</div>
+                <div><span id="curpage"></span>/<span id="totalpage"></span></div>
+                <div class="text-shu text-up" onclick="fliPage('up')">下一页</div>
+                <p class="arrow"></p>
+            </div>
+            <div class="main-right">
+                <div class="qcrode-main">
+                    <div class="sao-title">
+                        微信扫码分享给朋友
+                    </div>
+                    <div id="qrcode">
+                        <img class="qrlogo" src="/static/img/HB.png" alt="">
+                    </div>
+
+                    <div class="save-btn" onclick="downloadImage()">
+                        <span></span>
+                        <span>保存二维码</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        //判断是否是微信浏览器的函数
+        function isWeiXin() {
+            var ua = window.navigator.userAgent.toLowerCase();
+            if (ua.match(/MicroMessenger/i) == 'micromessenger') {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        // pc微信打开，隐藏预览模块
+        // if(isWeiXin()){
+        //     $('.view-center').addClass('wechat-show');
+        //     $('.sao-title').html('手机扫一扫查看请柬')
+
+        // }else{
+        //     $('.sao-title').html('手机扫一扫分享给朋友')
+        // }
+
+        $('.sao-title').html('手机扫一扫分享给朋友');
+        if (isWeiXin()) {
+            $('.make-btn1').hide()
+        }
+
+        window.addEventListener('message', function (event) {
+            // 判断有无数据
+            if (event.data.count) {
+                //  数据在event.data对象中
+                var curPage = event.data.cur;
+                var allPage = event.data.count;
+
+                $('.disable_page').removeClass('disable_page')
+                // if (curPage + 1 == allPage) {
+                //     $('.text-up').addClass('disable_page').removeClass('allow_page')
+                // } else {
+                //     $('.text-down').removeClass('disable_page').addClass('allow_page')
+                // }
+                // if (curPage == 1) {
+                //     $('.text-down').addClass('disable_page').removeClass('allow_page')
+                // } else {
+                //     $('.text-up').removeClass('disable_page').addClass('allow_page')
+                // }
+                $("#curpage").html(curPage + 1);
+                $("#totalpage").html(allPage);
+            }
+        })
+        var flipState = false;
+        var time;
+        function fliPage(point) {
+            if (flipState) return false;
+            var dom = $('#iframe-view')[0];
+            $('.disable_page').removeClass('disable_page')
+            dom.contentWindow.postMessage(point, '*');
+            flipState = true;
+            clearTimeout(time);
+            time = setTimeout(function () { flipState = false; }, 700);
+        }
+        var qrcode = new QRCode('qrcode', {
+            text: 'https://h5.hunbei5.com/app/A150661148131',
+            width: 140,
+            height: 140,
+            colorDark: '#000000',
+            colorLight: '#ffffff',
+        });
+
+        function downloadImage() {
+            var imgSrc = $("#qrcode img").not('.qrlogo').attr("src");
+            var a = $("<a></a>").attr("href", imgSrc).attr("download", "二维码.png").appendTo("body");
+
+            a[0].click();
+            a.remove();
+        }
+    </script>
+</body>
+
+</html>
